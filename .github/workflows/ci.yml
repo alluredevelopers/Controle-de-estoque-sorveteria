@@ -1,0 +1,29 @@
+name: Verificação do projeto
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+      - name: Instalar dependências
+        run: npm install --no-audit --no-fund
+      - name: Verificar segredos e arquivos sensíveis
+        run: npm run security:scan
+      - name: Executar testes
+        run: npm test
+      - name: Gerar aplicação
+        run: npm run build
